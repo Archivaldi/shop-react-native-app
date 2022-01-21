@@ -1,11 +1,11 @@
 import React from "react";
 import { View, StyleSheet, Image, Text, Button, TouchableOpacity } from 'react-native';
-import Colors from "../../constants/Colors";
+import Card from "../UI/Card";
 
 const ProductItem = props => {
     return (
         <TouchableOpacity onPress={props.onSelect}>
-            <View style={styles.product}>
+            <Card style={styles.product}>
                 <Image style={styles.image} source={{ uri: props.item.imageUrl }} />
                 <View style={styles.textContainer}>
                     <Text style={styles.title}>{props.item.title}</Text>
@@ -14,23 +14,13 @@ const ProductItem = props => {
                 <View style={styles.actions}>
                     {props.children}
                 </View>
-            </View>
+            </Card>
         </TouchableOpacity>
     );
 };
 
 const styles = StyleSheet.create({
     product: {
-        shadowColor: 'black',
-        shadowOpacity: 0.26,
-        shadowOffset: {
-            width: 0,
-            height: 2
-        },
-        shadowRadius: 8,
-        elevation: 5,
-        borderRadius: 10,
-        backgroundColor: 'white',
         height: 300,
         margin: 20
     },
