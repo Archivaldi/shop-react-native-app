@@ -15,18 +15,18 @@ export const fetchProducts = () => {
             const response = await fetch('https://react-native-shop-project-default-rtdb.firebaseio.com/products.json');
 
             //If the response in 200+ range it will be trueish. And falsy if it's not
-            if (!response.ok){
+            if (!response.ok) {
                 throw new Error('Something went wrong');
             }
 
             const responseData = await response.json();
             const loadedProducts = [];
-    
-            for ( const key in responseData){
-                const {title, price , description, imageUrl} = responseData[key];
+
+            for (const key in responseData) {
+                const { title, price, description, imageUrl } = responseData[key];
                 loadedProducts.push(new Product(key, 'u1', title, imageUrl, description, price))
-            }
-    
+            };
+
             dispatch({
                 type: SET_PRODUCTS,
                 products: loadedProducts
@@ -39,9 +39,20 @@ export const fetchProducts = () => {
 };
 
 export const deleteProduct = productId => {
-    return {
-        type: DELETE_PRODUCT,
-        productId
+    return async dispatch => {
+
+        try {
+            await fetch(`https://react-native-shop-project-default-rtdb.firebaseio.com/products/${productId}.json/`, {
+                method: "DELETE"
+            });
+
+            dispatch({
+                type: DELETE_PRODUCT,
+                productId
+            })
+        } catch (err) {
+            throw err
+        }
     }
 };
 
@@ -54,23 +65,38 @@ export const addProduct = (title, imageUrl, description, price) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({title, imageUrl, description, price})
+            body: JSON.stringify({ title, imageUrl, description, price })
         });
 
         const responseData = await response.json();
         console.log(responseData);
-        
+
         dispatch({
             type: ADD_PRODUCT,
-            productData: {id: responseData.name, title, imageUrl, price, description}
+            productData: { id: responseData.name, title, imageUrl, price, description }
         });
     }
 }
 
-export const editProduct = (productId, title, imageUrl,description) => {
-    return{
-        type: EDIT_PRODUCT,
-        productId,
-        productData: {title, imageUrl, description}
-    }
+export const editProduct = (productId, title, imageUrl, description) => {
+    return async dispatch => {
+        try {
+            await fetch(`https://react-native-shop-project-default-rtdb.firebaseio.com/products/${productId}.json/`, {
+                method: "PATCH",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title, imageUrl, description })
+            });
+            dispatch(
+                {
+                    type: EDIT_PRODUCT,
+                    productId,
+                    productData: { title, imageUrl, description }
+                }
+            )
+        } catch (err) {
+            throw err
+        }
+    };
 }

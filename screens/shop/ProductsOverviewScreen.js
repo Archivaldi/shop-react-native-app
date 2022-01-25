@@ -28,6 +28,17 @@ const ProductsOverviewScreen = props => {
         setIsLoading(false);
     }, [dispatch, setIsLoading, setError]);
 
+    //if something changes in the database during user's session, his app won't be updated because the app loads only when it launched
+    //that's why we need to install the listener that will listen all the changes that are done on the server and reloads the info when the screen is showed
+    //this function won't run inititally. Only when the screen is revisited
+    useEffect(() => {
+        const willFocusSubscription = props.navigation.addListener('willFocus', loadProducts);
+
+        //the function to clean up the listener. Because new listener will be created every time the this function triggers
+        return () => {
+            willFocusSubscription.remove();
+        };
+    }, [loadProducts])
 
 
     //dispatch returns a promise. We initially set loading to true to get info and use "then" when the info is loaded. But it should be async.
