@@ -1,23 +1,73 @@
-import React from 'react';
-import { FlatList, Button, StyleSheet, Platform } from 'react-native';
+import React, {useState, useEffect, useCallback} from 'react';
+import { View, FlatList, Text, Button, StyleSheet, Platform, ActivityIndicator } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import * as cartActions from "../../store/actions/cart";
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import Colors from '../../constants/Colors';
+import * as productActions from "../../store/actions/products";
 
 
 import ProductItem from '../../components/shop/ProductItem';
 import CustomHeaderButton from '../../components/UI/HeaderButton';
 
 const ProductsOverviewScreen = props => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(undefined);
+    
     const products = useSelector(state => state.products.availableProducts)
     const dispatch = useDispatch();
+
+    const loadProducts = useCallback(async() => {
+        setError(null)
+        setIsLoading(true);
+        try {
+            await dispatch(productActions.fetchProducts());
+        } catch (err) {
+            setError(err.message);
+        }
+        setIsLoading(false);
+    }, [dispatch, setIsLoading, setError]);
+
+
+
+    //dispatch returns a promise. We initially set loading to true to get info and use "then" when the info is loaded. But it should be async.
+    // But async can't be applied directly into useEffect that;s why we add another function inside and make it async
+    useEffect(() => {
+        loadProducts();
+    }, [dispatch, loadProducts]);
 
     const selectItemHandler = (id, title) => {
         props.navigation.navigate("ProductDetail", {
             productId: id,
             title
         })
+    }
+
+    //if the error was caught, display the error text on the screen and let the user reload the app
+    if (error) {
+        return(
+            <View style={styles.centered}>
+                <Text>{error}</Text>
+                <Button title="Try again" onPress={loadProducts} color={Colors.primaryColor} />
+            </View>
+        )
+    }
+
+    //if the data is still loading we add a spinner to wait until the data is loaded
+    if(isLoading){
+        return (
+            <View style={styles.centered}>
+                <ActivityIndicator size="large" color={Colors.primaryColor}/>
+            </View>
+        )
+    };
+
+    if (!isLoading && products.length === 0) {
+        return (
+            <View style={styles.centered}>
+                <Text>No Product found. Maybe start adding some</Text>
+            </View>
+        )
     }
 
     return (
@@ -69,7 +119,8 @@ ProductsOverviewScreen.navigationOptions = data => {
 const styles = StyleSheet.create({
     screen: {
         flex: 1
-    }
+    },
+    centered: {flex: 1, justifyContent: 'center', alignItems: 'center'}
 });
 
 export default ProductsOverviewScreen;
