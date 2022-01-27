@@ -1,10 +1,11 @@
-import React, { useEffect, useCallback, useReducer } from 'react';
-import { View, ScrollView, Text, TextInput, StyleSheet, Alert, Platform, KeyboardAvoidingView } from 'react-native';
+import React, { useState, useEffect, useCallback, useReducer } from 'react';
+import { View, ScrollView, Text, TextInput, StyleSheet, Alert, Platform, KeyboardAvoidingView, ActivityIndicator } from 'react-native';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import CustomHeaderButton from '../../components/UI/HeaderButton';
 import { useSelector, useDispatch } from 'react-redux';
 import * as productsActions from "../../store/actions/products";
 import Input from '../../components/UI/Input';
+import Colors from '../../constants/Colors';
 
 const REDUCER_UPDATE = "REDUCER_UPDATE";
 
@@ -36,6 +37,9 @@ const formReducer = (state, action) => {
 
 const EditProductScreen = props => {
 
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState();
+
     const productId = props.navigation.getParam("productId");
     const editedProduct = useSelector(state => state.products.userProducts.find(product => product.id === productId));
     const dispatch = useDispatch();
@@ -59,17 +63,26 @@ const EditProductScreen = props => {
 
 
 
-    const submitHandler = useCallback(() => {
+    const submitHandler = useCallback(async () => {
         if (!formState.formIsValid) {
             Alert.alert("Warning", "Please check errors in the form", [{ text: "Got it" }])
             return;
         };
-        if (productId) {
-            dispatch(productsActions.editProduct(productId, formState.inputValues.title, formState.inputValues.imageUrl, formState.inputValues.description));
-        } else {
-            dispatch(productsActions.addProduct(formState.inputValues.title, formState.inputValues.imageUrl, formState.inputValues.description, +formState.inputValues.price))
+
+        setError(null);
+        setIsLoading(true);
+
+        try {
+            if (productId) {
+                await dispatch(productsActions.editProduct(productId, formState.inputValues.title, formState.inputValues.imageUrl, formState.inputValues.description));
+            } else {
+                await dispatch(productsActions.addProduct(formState.inputValues.title, formState.inputValues.imageUrl, formState.inputValues.description, +formState.inputValues.price))
+            };
+            props.navigation.goBack();
+        } catch (e) {
+            setError(e.message);
         }
-        props.navigation.goBack();
+        setIsLoading(false);
     }, [dispatch, productId, formState]);
 
     useEffect(() => {
@@ -85,10 +98,20 @@ const EditProductScreen = props => {
         })
     }, [dispatchFormState]);
 
+    //separate useEffect to handle the errors. We put the error as a dependancy ro make sure that this function is re-created only when "error" state is changed
+    useEffect(() => {
+        if (error){
+            Alert.alert("An error occured", error, [{text: "Okay"}])
+        }
+    }, [error]);
+
+    if (isLoading) {
+        return <View style={styles.centered} ><ActivityIndicator size='large' color={Colors.primaryColor} /></View>
+    }
 
 
     return (
-        <KeyboardAvoidingView style={{flex: 1}} behavior='padding' keyboardVerticalOffset={100}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior='padding' keyboardVerticalOffset={100}>
             <ScrollView>
                 <View style={styles.form}>
                     <Input id="title" onInputChange={inputChangeHandler} label="Title" required errorText="Please enter a valid title" keyboardType='default' autoCorrect returnKey="next" initialValue={editedProduct ? editedProduct.title : ''} isValid={!!editedProduct} />
@@ -122,6 +145,11 @@ const styles = StyleSheet.create({
     },
     warning: {
         color: "red"
+    },
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });
 

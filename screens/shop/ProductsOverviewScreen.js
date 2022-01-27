@@ -18,14 +18,13 @@ const ProductsOverviewScreen = props => {
     const dispatch = useDispatch();
 
     const loadProducts = useCallback(async() => {
+        
         setError(null)
-        setIsLoading(true);
         try {
             await dispatch(productActions.fetchProducts());
         } catch (err) {
             setError(err.message);
         }
-        setIsLoading(false);
     }, [dispatch, setIsLoading, setError]);
 
     //if something changes in the database during user's session, his app won't be updated because the app loads only when it launched
@@ -44,7 +43,8 @@ const ProductsOverviewScreen = props => {
     //dispatch returns a promise. We initially set loading to true to get info and use "then" when the info is loaded. But it should be async.
     // But async can't be applied directly into useEffect that;s why we add another function inside and make it async
     useEffect(() => {
-        loadProducts();
+        setIsLoading(true);
+        loadProducts().then(() => setIsLoading(false));
     }, [dispatch, loadProducts]);
 
     const selectItemHandler = (id, title) => {
@@ -82,7 +82,12 @@ const ProductsOverviewScreen = props => {
     }
 
     return (
-        <FlatList style={styles.screen} data={products} renderItem={itemData => (
+        <FlatList
+        //built in prop in the flatlist. Reloads when "pulled down"
+        onRefresh={loadProducts}
+        //shoule be added if onRefresh used. Points to variable that shows if we are loading or done loading. isLoading in our case
+        refreshing={isLoading}
+        style={styles.screen} data={products} renderItem={itemData => (
             <ProductItem
                 item={itemData.item}
                 onSelect={() => {

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Button, FlatList, StyleSheet, Alert, Platform } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import { View, Text,Button, FlatList, StyleSheet, Alert, Platform, ActivityIndicator } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import CustomHeaderButton from '../../components/UI/HeaderButton';
@@ -10,6 +10,9 @@ import ProductItem from "../../components/shop/ProductItem";
 import * as productsActions from "../../store/actions/products";
 
 const UserProductsScreen = props => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState();
+
     const userProducts = useSelector(state => state.products.userProducts);
     const dispatch = useDispatch();
 
@@ -20,10 +23,25 @@ const UserProductsScreen = props => {
     const deleteHandler = id => {
         Alert.alert("Are you sure?", "Do you  really want to delete this item?", 
             [{text: "No", style: 'defaut'},
-            {text: "Yes", style: 'destructive', onPress: () => {
-                dispatch(productsActions.deleteProduct(id))
+            {text: "Yes", style: 'destructive', onPress: async () => {
+                setError(null);
+                setIsLoading(true)
+                try {
+                    await  dispatch(productsActions.deleteProduct(id));
+                } catch (e) {
+                    setError(e.message);
+                }
             }}] 
             )
+            setIsLoading(false);
+    };
+
+    useEffect(() => {
+        Alert.alert("An error occured", error, [{text: 'okay'}]);
+    }, [error])
+
+    if (isLoading) {
+        return <View style={styles.centered} ><ActivityIndicator size='large' color={Colors.primaryColor}/></View>
     }
 
     return <FlatList data={userProducts} renderItem={product => {
@@ -64,7 +82,11 @@ UserProductsScreen.navigationOptions = data => {
 };
 
 const styles = StyleSheet.create({
-
+    centered: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    }
 });
 
 export default UserProductsScreen;

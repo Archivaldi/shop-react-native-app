@@ -42,9 +42,13 @@ export const deleteProduct = productId => {
     return async dispatch => {
 
         try {
-            await fetch(`https://react-native-shop-project-default-rtdb.firebaseio.com/products/${productId}.json/`, {
+            const response = await fetch(`https://react-native-shop-project-default-rtdb.firebaseio.com/products/${productId}.json/`, {
                 method: "DELETE"
             });
+
+            if (!response.ok){
+                throw new Error("Something went wrong");
+            };
 
             dispatch({
                 type: DELETE_PRODUCT,
@@ -58,6 +62,7 @@ export const deleteProduct = productId => {
 
 export const addProduct = (title, imageUrl, description, price) => {
     //redux-thunk. INstead of returning am object right away it returns the dispatch function to make an async code
+    //this dispatch function is from redux-thunk. We set it up in App.js and don't have to do anything here. Just use this funciton
     return async dispatch => {
         //any async code could be written here
         const response = await fetch('https://react-native-shop-project-default-rtdb.firebaseio.com/products.json', {
@@ -69,7 +74,6 @@ export const addProduct = (title, imageUrl, description, price) => {
         });
 
         const responseData = await response.json();
-        console.log(responseData);
 
         dispatch({
             type: ADD_PRODUCT,
@@ -81,13 +85,18 @@ export const addProduct = (title, imageUrl, description, price) => {
 export const editProduct = (productId, title, imageUrl, description) => {
     return async dispatch => {
         try {
-            await fetch(`https://react-native-shop-project-default-rtdb.firebaseio.com/products/${productId}.json/`, {
+            const response = await fetch(`https://react-native-shop-project-default-rtdb.firebaseio.com/products/${productId}.json/`, {
                 method: "PATCH",
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ title, imageUrl, description })
             });
+
+            if (!response.ok){
+                throw new Error("Something went wrong");
+            };
+
             dispatch(
                 {
                     type: EDIT_PRODUCT,
