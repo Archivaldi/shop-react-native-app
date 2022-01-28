@@ -12,6 +12,7 @@ import CustomHeaderButton from '../../components/UI/HeaderButton';
 
 const ProductsOverviewScreen = props => {
     const [isLoading, setIsLoading] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const [error, setError] = useState(undefined);
     
     const products = useSelector(state => state.products.availableProducts)
@@ -20,11 +21,13 @@ const ProductsOverviewScreen = props => {
     const loadProducts = useCallback(async() => {
         
         setError(null)
+        setIsRefreshing(true);
         try {
             await dispatch(productActions.fetchProducts());
         } catch (err) {
             setError(err.message);
         }
+        setIsRefreshing(false);
     }, [dispatch, setIsLoading, setError]);
 
     //if something changes in the database during user's session, his app won't be updated because the app loads only when it launched
@@ -85,8 +88,8 @@ const ProductsOverviewScreen = props => {
         <FlatList
         //built in prop in the flatlist. Reloads when "pulled down"
         onRefresh={loadProducts}
-        //shoule be added if onRefresh used. Points to variable that shows if we are loading or done loading. isLoading in our case
-        refreshing={isLoading}
+        //shoule be added if onRefresh used. Points to variable that shows if we are loading or done loading. isRefreshing in our case
+        refreshing={isRefreshing}
         style={styles.screen} data={products} renderItem={itemData => (
             <ProductItem
                 item={itemData.item}
