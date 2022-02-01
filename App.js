@@ -13,8 +13,10 @@ import cartReducer from "./store/reducers/cart";
 import orderReducer from "./store/reducers/orders";
 import authReducer from "./store/reducers/auth";
 
-import ProductsNavigator from "./navigation/shopNavigator";
+import NavigationConteiner from './navigation/NavigationConteiner';
 
+
+//set up one root reducer to access any state at any component
 const rootReducer = combineReducers({
   products: productReducer,
   cart: cartReducer,
@@ -42,8 +44,10 @@ export default function App() {
   };
 
   return (
+    //store is redux-store. We should use Provider to provide the store
+    //we have to use additional wrapper around our navigator because we can use redux store in the child component only 
     <Provider store={store}>
-      <ProductsNavigator style={styles.container} />
+      <NavigationConteiner style={styles.container} />
     </Provider>
   )
 }

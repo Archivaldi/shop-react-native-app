@@ -15,16 +15,19 @@ function StartUpScreen(props) {
                 props.navigation.navigate("Auth");
                 return;
             };
+
             const transformedData = JSON.parse(userData);
             const { token, userId, expirationDate } = transformedData;
+            console.log(transformedData);
             const expiryDate = new Date(expirationDate);
+            const expirationTime = expiryDate.getTime() - new Date().getTime();
 
             if (expiryDate <= new Date() || !token || !userId){
                 props.navigation.navigate("Auth");
                 return;
             };
 
-            dispatch(authActions.authanticate(userId, token))
+            dispatch(authActions.authanticate(userId, token, expirationTime));
             props.navigation.navigate('Shop');
         };
 
