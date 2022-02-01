@@ -39,10 +39,10 @@ export const fetchProducts = () => {
 };
 
 export const deleteProduct = productId => {
-    return async dispatch => {
-
+    return async (dispatch, getState) => {
+        const token = getState().auth.token;
         try {
-            const response = await fetch(`https://react-native-shop-project-default-rtdb.firebaseio.com/products/${productId}.json/`, {
+            const response = await fetch(`https://react-native-shop-project-default-rtdb.firebaseio.com/products/${productId}.json?auth=${token}`, {
                 method: "DELETE"
             });
 
@@ -63,29 +63,33 @@ export const deleteProduct = productId => {
 export const addProduct = (title, imageUrl, description, price) => {
     //redux-thunk. INstead of returning am object right away it returns the dispatch function to make an async code
     //this dispatch function is from redux-thunk. We set it up in App.js and don't have to do anything here. Just use this funciton
-    return async dispatch => {
+    return async (dispatch, getState) => {
+        const {userId} = getState().auth;
+        const token = getState().auth.token;
         //any async code could be written here
-        const response = await fetch('https://react-native-shop-project-default-rtdb.firebaseio.com/products.json', {
+        const response = await fetch(`https://react-native-shop-project-default-rtdb.firebaseio.com/products.json?auth=${token}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ title, imageUrl, description, price })
+            body: JSON.stringify({ title, imageUrl, description, price, ownerId: userId })
         });
 
         const responseData = await response.json();
 
         dispatch({
             type: ADD_PRODUCT,
-            productData: { id: responseData.name, title, imageUrl, price, description }
+            productData: { id: responseData.name, title, imageUrl, price, description, ownerId: userId }
         });
     }
 }
 
 export const editProduct = (productId, title, imageUrl, description) => {
-    return async dispatch => {
+    //redux-thunk allows to get second argument getState to get current state from redux
+    return async (dispatch, getState) => {
         try {
-            const response = await fetch(`https://react-native-shop-project-default-rtdb.firebaseio.com/products/${productId}.json/`, {
+            const token = getState().auth.token;
+            const response = await fetch(`https://react-native-shop-project-default-rtdb.firebaseio.com/products/${productId}.json?auth=${token}`, {
                 method: "PATCH",
                 headers: {
                     'Content-Type': 'application/json'

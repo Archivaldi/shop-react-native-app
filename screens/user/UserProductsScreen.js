@@ -11,7 +11,7 @@ import * as productsActions from "../../store/actions/products";
 
 const UserProductsScreen = props => {
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState();
+    const [error, setError] = useState(undefined);
 
     const userProducts = useSelector(state => state.products.userProducts);
     const dispatch = useDispatch();
@@ -24,7 +24,7 @@ const UserProductsScreen = props => {
         Alert.alert("Are you sure?", "Do you  really want to delete this item?", 
             [{text: "No", style: 'defaut'},
             {text: "Yes", style: 'destructive', onPress: async () => {
-                setError(null);
+                //setError(undefined);
                 setIsLoading(true)
                 try {
                     await  dispatch(productsActions.deleteProduct(id));
@@ -37,7 +37,9 @@ const UserProductsScreen = props => {
     };
 
     useEffect(() => {
-        Alert.alert("An error occured", error, [{text: 'okay'}]);
+        if (error){
+            Alert.alert("An error occured", error, [{text: 'Got it'}]);
+        }
     }, [error])
 
     if (isLoading) {

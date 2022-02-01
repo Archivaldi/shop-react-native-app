@@ -11,15 +11,18 @@ import ReduxThunk from "redux-thunk";
 import productReducer from "./store/reducers/products";
 import cartReducer from "./store/reducers/cart";
 import orderReducer from "./store/reducers/orders";
+import authReducer from "./store/reducers/auth";
 
 import ProductsNavigator from "./navigation/shopNavigator";
 
 const rootReducer = combineReducers({
   products: productReducer,
   cart: cartReducer,
-  orders: orderReducer
+  orders: orderReducer,
+  auth: authReducer
 });
 
+//set up for redux-thunk
 const store = createStore(rootReducer, applyMiddleware(ReduxThunk));
 
 enableScreens();
