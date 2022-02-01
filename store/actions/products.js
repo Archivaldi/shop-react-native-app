@@ -7,8 +7,9 @@ export const ADD_PRODUCT = "ADD_PRODUCT";
 export const SET_PRODUCTS = "SET_PRODUCTS";
 
 export const fetchProducts = () => {
-    return async dispatch => {
+    return async (dispatch, getState) => {
 
+        const {userId} = getState().auth;
         //handling request to get all products from the database and handling the errors
 
         try {
@@ -23,13 +24,14 @@ export const fetchProducts = () => {
             const loadedProducts = [];
 
             for (const key in responseData) {
-                const { title, price, description, imageUrl } = responseData[key];
-                loadedProducts.push(new Product(key, 'u1', title, imageUrl, description, price))
+                const { title, price, description, imageUrl, ownerId } = responseData[key];
+                loadedProducts.push(new Product(key, ownerId, title, imageUrl, description, price))
             };
 
             dispatch({
                 type: SET_PRODUCTS,
-                products: loadedProducts
+                products: loadedProducts,
+                userProducts: loadedProducts.filter(prod => prod.ownerId === userId)
             })
         } catch (error) {
             throw error;

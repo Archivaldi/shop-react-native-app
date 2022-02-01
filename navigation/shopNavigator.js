@@ -5,6 +5,7 @@ import { createDrawerNavigator } from 'react-navigation-drawer';
 import { createSwitchNavigator } from 'react-navigation';
 import { Platform } from 'react-native';
 
+import StartUpScreen from '../screens/StartUpScreen';
 import AuthScreen from '../screens/user/AuthScreen';
 import ProductsOverviewScreen from '../screens/shop/ProductsOverviewScreen';
 import ProductDetailScreen from '../screens/shop/ProductDetailScreen';
@@ -78,6 +79,7 @@ const AuthNavigator = createStackNavigator({
 })
 
 const MainNavigator = createSwitchNavigator({
+    Start: StartUpScreen,
     Auth: AuthNavigator,
     Shop: ShopNavigator
 })
