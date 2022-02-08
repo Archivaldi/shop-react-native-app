@@ -12,23 +12,25 @@ function StartUpScreen(props) {
         const tryLogin = async () => {
             const userData = await AsyncStorage.getItem('userData');
             if (!userData) {
-                props.navigation.navigate("Auth");
+                //props.navigation.navigate("Auth");
+                dispatch(authActions.setTriedLogin());
                 return;
             };
 
             const transformedData = JSON.parse(userData);
             const { token, userId, expirationDate } = transformedData;
-            console.log(transformedData);
+            //console.log(transformedData);
             const expiryDate = new Date(expirationDate);
             const expirationTime = expiryDate.getTime() - new Date().getTime();
 
             if (expiryDate <= new Date() || !token || !userId){
-                props.navigation.navigate("Auth");
+                //props.navigation.navigate("Auth");
+                dispatch(authActions.setTriedLogin());
                 return;
             };
 
             dispatch(authActions.authanticate(userId, token, expirationTime));
-            props.navigation.navigate('Shop');
+            //props.navigation.navigate('Shop');
         };
 
         tryLogin();

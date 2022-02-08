@@ -28,12 +28,13 @@ const UserProductsScreen = props => {
                 setIsLoading(true)
                 try {
                     await  dispatch(productsActions.deleteProduct(id));
+                    setIsLoading(false);
                 } catch (e) {
                     setError(e.message);
                 }
             }}] 
             )
-            setIsLoading(false);
+
     };
 
     useEffect(() => {
@@ -63,7 +64,7 @@ const UserProductsScreen = props => {
     }} />
 };
 
-UserProductsScreen.navigationOptions = data => {
+export const userProductsScreenOptions = data => {
     return {
         headerTitle: 'Your products',
         headerLeft: () => {

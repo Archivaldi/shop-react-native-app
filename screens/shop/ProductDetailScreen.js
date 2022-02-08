@@ -6,7 +6,7 @@ import Colors from '../../constants/Colors';
 
 const ProductDetailScreen = props => {
     const dispatch = useDispatch();
-    const productId = props.navigation.getParam("productId");
+    const productId = props.route.params?.productId;
     const selectedProduct = useSelector(state => state.products.availableProducts.find(product => product.id === productId));
     return (
         <ScrollView>
@@ -46,9 +46,9 @@ const styles = StyleSheet.create({
     }
 });
 
-ProductDetailScreen.navigationOptions = (data) => {
+export const productDetailScreenOptions = (data) => {
     return {
-        headerTitle: data.navigation.getParam("title")
+        headerTitle: data.route.params.title
     }
 }
 

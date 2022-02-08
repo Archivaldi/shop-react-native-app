@@ -30,7 +30,7 @@ const ProductsOverviewScreen = props => {
         setIsRefreshing(false);
     }, [dispatch, setIsLoading, setError]);
 
-    //if something changes in the database during user's session, his app won't be updated because the app loads only when it launched
+    //if something changes in the database during user's session, thier app won't be updated because the app loads only when it launched
     //that's why we need to install the listener that will listen all the changes that are done on the server and reloads the info when the screen is showed
     //this function won't run inititally. Only when the screen is revisited
     useEffect(() => {
@@ -107,9 +107,9 @@ const ProductsOverviewScreen = props => {
     )
 };
 
-ProductsOverviewScreen.navigationOptions = data => {
+export const productOverviewScreenOptions =  data => {
     return {
-        headerTitle: "All Products",
+        title: "All Products",
         headerLeft: () => {
             return (
                 <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>

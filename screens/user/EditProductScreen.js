@@ -40,7 +40,7 @@ const EditProductScreen = props => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
 
-    const productId = props.navigation.getParam("productId");
+    const productId = props.route.params?.productId;
     const editedProduct = useSelector(state => state.products.userProducts.find(product => product.id === productId));
     const dispatch = useDispatch();
 
@@ -86,7 +86,21 @@ const EditProductScreen = props => {
     }, [dispatch, productId, formState]);
 
     useEffect(() => {
-        props.navigation.setParams({ submit: submitHandler });
+
+        //new way to pass a function from a sreens to its options
+        //we want to do that when we need to set some options dinamically, with state updates
+        props.navigation.setOptions({
+            headerRight: () => {
+                    return (
+                        <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+                            <Item title='Save' iconName={Platform.OS === 'android' ? 'md-checkmark' : 'ios-checkmark'} onPress={submitHandler} />
+                        </HeaderButtons>
+                    )
+                }
+        }) 
+
+        //Old way to pass a function from a sreens to its options
+        //props.navigation.setParams({ submit: submitHandler });
     }, [submitHandler]);
 
     const inputChangeHandler = useCallback((inputIdentifier, inputValue, inputValidity) => {
@@ -126,16 +140,26 @@ const EditProductScreen = props => {
     );
 };
 
-EditProductScreen.navigationOptions = data => {
+export const editProductScreenOptions = ({route}) => {
+
+    //here we want to put STATIC options that won't change
+
+
+    //Old way to pass a function from a sreens to its options
+    //const submitFn = route.params ? route.params.submit : null;
+    const productId = route.params ? route.params.productId : null;
+
     return {
-        headerTitle: data.navigation.getParam("productId") ? "Edit Product" : "Add Product",
-        headerRight: () => {
-            return (
-                <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
-                    <Item title='Save' iconName={Platform.OS === 'android' ? 'md-checkmark' : 'ios-checkmark'} onPress={data.navigation.getParam("submit")} />
-                </HeaderButtons>
-            )
-        }
+        headerTitle: productId ? "Edit Product" : "Add Product",
+        //Old way to pass a function from a sreens to its options
+        //
+        // headerRight: () => {
+        //     return (
+        //         <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+        //             <Item title='Save' iconName={Platform.OS === 'android' ? 'md-checkmark' : 'ios-checkmark'} onPress={submitFn} />
+        //         </HeaderButtons>
+        //     )
+        // }
     }
 }
 

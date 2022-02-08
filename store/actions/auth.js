@@ -7,6 +7,11 @@ let timer;
 
 export const AUTHENTICATE = "AUTHENTICATE";
 export const LOGOUT = "LOGOUT";
+export const SET_TRID_LOGIN = "SET_TRIED_LOGIN";
+
+export const setTriedLogin = () => {
+    return {type: SET_TRID_LOGIN}
+};
 
 export const authanticate = (userId, token, expiryTime) => {
     return dispatch => {
