@@ -20,7 +20,7 @@ export default (state = initalState, action) => {
                 availableProducts: state.availableProducts.filter(product => product.id !== action.productId)
             }
         case ADD_PRODUCT:
-            const newProduct = new Product(action.productData.id, action.productData.ownerId, action.productData.title, action.productData.imageUrl, action.productData.description, action.productData.price);
+            const newProduct = new Product(action.productData.id, action.productData.ownerId, action.productData.ownerPushToken, action.productData.title, action.productData.imageUrl, action.productData.description, action.productData.price);
             return {
                 ...state,
                 availableProducts: state.availableProducts.concat(newProduct),
@@ -28,7 +28,7 @@ export default (state = initalState, action) => {
             }
         case EDIT_PRODUCT:
             const productIndex = state.userProducts.findIndex(product => product.id === action.productId);
-            const updatedProduct = new Product(action.productId,state.userProducts[productIndex].ownerId, action.productData.title, action.productData.imageUrl, action.productData.description, state.userProducts[productIndex].price);
+            const updatedProduct = new Product(action.productId,state.userProducts[productIndex].ownerId, state.userProducts[productIndex].ownerPushToken, action.productData.title, action.productData.imageUrl, action.productData.description, state.userProducts[productIndex].price);
             const updatedUserProducts = [...state.userProducts];
             updatedUserProducts[productIndex] = updatedProduct;
             const availableProductIndex = state.availableProducts.findIndex(product => product.id === action.productId);

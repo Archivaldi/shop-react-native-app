@@ -89,6 +89,7 @@ const EditProductScreen = props => {
 
         //new way to pass a function from a sreens to its options
         //we want to do that when we need to set some options dinamically, with state updates
+        //in this example we depend on setError, setIsLoading and we dispatch actions with state updates
         props.navigation.setOptions({
             headerRight: () => {
                     return (

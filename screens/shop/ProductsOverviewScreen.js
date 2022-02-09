@@ -34,11 +34,11 @@ const ProductsOverviewScreen = props => {
     //that's why we need to install the listener that will listen all the changes that are done on the server and reloads the info when the screen is showed
     //this function won't run inititally. Only when the screen is revisited
     useEffect(() => {
-        const willFocusSubscription = props.navigation.addListener('willFocus', loadProducts);
+        const unsubscribe = props.navigation.addListener('willFocus', loadProducts);
 
         //the function to clean up the listener. Because new listener will be created every time the this function triggers
         return () => {
-            willFocusSubscription.remove();
+            unsubscribe()
         };
     }, [loadProducts])
 

@@ -34,7 +34,8 @@ const CartScreen = props => {
             productTitle: items[key].productTitle,
             productPrice: items[key].productPrice,
             quantity: items[key].quantity,
-            sum: items[key].sum
+            sum: items[key].sum,
+            productPushToken: items[key].ownerPushToken
         })
     };
     const sortedcartItems = cartItems.sort((a,b) => a.productId > b.productId ? 1 : -1)

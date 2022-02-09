@@ -27,8 +27,6 @@ export const addOrder = (cartItems, totalAmount) => {
 
             const responseData = await response.json();
 
-            console.log(responseData);
-
 
             //this dispatch function is from redux-thunk. We set it up in App.js and don't have to do anything here. Just use this funciton
             dispatch({
@@ -39,7 +37,29 @@ export const addOrder = (cartItems, totalAmount) => {
                     amount: totalAmount,
                     date
                 }
-            })
+            });
+
+
+
+            for (const cartItem of cartItems){
+                const pushToken = cartItem.productPushToken;
+
+                fetch("https://exp.host/--/api/v2/push/send", {
+                    method: "POST",
+                    headers: {
+                        "Accept": "application/json",
+                        "Accept-Encoding": 'dzip, deflate',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        to: pushToken,
+                        data: cartItem,
+                        title: "An order was placed",
+                        body: cartItem.productTitle
+                    })
+                })
+            }
+
         } catch (err) {
             throw err;
         }
